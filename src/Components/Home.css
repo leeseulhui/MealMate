@@ -1,0 +1,28 @@
+.home-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;  
+  }
+  
+  .welcome-text {
+    color: #60625ff0;
+    font-size: 2em;  
+  }
+  
+  .login-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border-radius: 50px;  
+    background-color: rgba(118, 201, 121, 0.828);  
+    color: white; 
+    border: none;  
+    cursor: pointer; 
+  }
+  
+  .login-button:hover {
+    background-color: #071209;  
+  }
+  
