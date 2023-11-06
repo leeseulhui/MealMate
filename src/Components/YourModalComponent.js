@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
+<<<<<<< HEAD
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import kimchiStewImage from '../images/free-icon-kimchi-2276924.png'
@@ -49,6 +50,39 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
     const savePartyData = () => {
         if (cuisine && selectedFood) {
             handleSaveData(cuisine, selectedFood.name);
+=======
+
+Modal.setAppElement('#root'); // Replace '#root' with the actual root element ID of your app
+
+const YourModalComponent = ({
+    selectedParty,
+    setShowModal,
+    handleSaveData,
+    joinParty
+}) => {
+    const [cuisine, setCuisine] = useState('');
+    const [foodChoice, setFoodChoice] = useState('');
+
+    const foodOptions = {
+        한식: ["김치찌개", "불고기", "비빔밥"],
+        중식: ["짜장면", "마파두부", "꿔바로우"],
+        양식: ["스테이크", "파스타", "피자"],
+        일식: ["초밥", "라멘", "돈부리"],
+    };
+
+    const handleCuisineChange = (event) => {
+        setCuisine(event.target.value);
+        setFoodChoice('');
+    };
+
+    const handleFoodChoiceChange = (event) => {
+        setFoodChoice(event.target.value);
+    };
+
+    const savePartyData = () => {
+        if (cuisine && foodChoice) {
+            handleSaveData(cuisine, foodChoice);
+>>>>>>> aea9e5ffe9c1483e0e46d9b2dc8f1795eb788960
             setShowModal(false);
         } else {
             alert('음식 유형과 음식을 모두 선택해주세요.');
@@ -122,6 +156,7 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
             {selectedParty.id === 'new' && (
                 <div>
                     <h3 style={{ color: '#5e72e4', marginBottom: '10px' }}>음식 선택</h3>
+<<<<<<< HEAD
                     <div>
                         {Object.keys(foodOptions).map((option) => (
                             <button
@@ -181,6 +216,28 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
                         <button onClick={savePartyData} style={{ backgroundColor: '#5e72e4', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', cursor: 'pointer', marginTop: '10px' }}>저장</button>
                     </div>
+=======
+                    <select value={cuisine} onChange={handleCuisineChange} style={{ margin: '5px', padding: '10px', borderRadius: '5px', width: '100%' }}>
+                        <option value="">음식 유형 선택</option>
+                        {Object.keys(foodOptions).map((option) => (
+                            <option key={option} value={option}>{option}</option>
+                        ))}
+                    </select>
+                    {cuisine && (
+                        <select value={foodChoice} onChange={handleFoodChoiceChange} style={{ margin: '5px', padding: '10px', borderRadius: '5px', width: '100%' }}>
+                            <option value="">음식 선택</option>
+                            {foodOptions[cuisine].map((food) => (
+                                <option key={food} value={food}>{food}</option>
+                            ))}
+                        </select>
+                    )}
+                    <button
+                        onClick={savePartyData}
+                        style={{ backgroundColor: '#5e72e4', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', cursor: 'pointer', marginTop: '10px' }}
+                    >
+                        파티 생성
+                    </button>
+>>>>>>> aea9e5ffe9c1483e0e46d9b2dc8f1795eb788960
                 </div>
             )}
 

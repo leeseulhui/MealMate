@@ -13,7 +13,10 @@
     "react-modal": "^3.16.1",
     "react-router-dom": "^6.18.0",
     "react-scripts": "5.0.1",
+<<<<<<< HEAD
     "swiper": "^11.0.3",
+=======
+>>>>>>> aea9e5ffe9c1483e0e46d9b2dc8f1795eb788960
     "web-vitals": "^2.1.4"
   },
   "scripts": {
