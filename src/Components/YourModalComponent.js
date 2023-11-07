@@ -45,7 +45,7 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
             style={modalStyles}
             contentLabel="Party Modal"
         >
-            <div style={{ borderBottom: '1px solid #eaeaea', paddingBottom: '10px', marginBottom: '20px', textAlign: 'center' }}>
+            <div style={{ borderBottom: '1px solid #eaeaea', paddingBottom: '10px', marginBottom: '20px' }}>
                 <h2 style={{ color: '#5e72e4' }}>파티 정보</h2>
             </div>
 
@@ -75,7 +75,7 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
             )}
 
             {selectedParty.id === 'new' && (
-                 <div style={{ textAlign: 'center' }}>
+                <div>
                     <h3 style={{ color: '#5e72e4', marginBottom: '10px' }}>음식 선택</h3>
                     <div>
                         {Object.keys(foodOptions).map((option) => (
