@@ -30,9 +30,9 @@ function Map() {
 
     const deleteMarker = async (partyId) => {
         try {
-            await deleteMarkerData(partyId); // 가정: deleteMarkerData는 firebaseService.js에 정의된 함수
+            await deleteMarkerData(partyId);
             setParties(parties.filter(party => party.id !== partyId));
-            setShowModal(false); // 삭제 후 모달을 닫음
+            setShowModal(false);
         } catch (error) {
             console.error('Error deleting marker: ', error);
         }
@@ -70,16 +70,12 @@ function Map() {
             mates: user ? [{ uid: user.uid, displayName: user.displayName || 'Anonymous' }] : [],
             cuisine: cuisine,
             foodChoice: foodChoice,
-            position: newPartyLocation, // Save the latitude and longitude
-            // Initialize with an empty address; will be filled in by geocoding
+            position: newPartyLocation,
             address: ''
         };
 
         try {
-            // Use Google Maps Geocoding API to get the address
             const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPartyLocation.lat},${newPartyLocation.lng}&key=AIzaSyBXSxMFjzikCYRuUJ_7DvFxAvoib0INVq8`);
-
-            // Check if any results were returned
             if (response.data.status === 'OK') {
                 if (response.data.results.length > 0) {
                     newParty.address = response.data.results[0].formatted_address;
@@ -90,8 +86,6 @@ function Map() {
             } else {
                 console.error('Geocoding failed: ' + response.data.status);
             }
-
-            // Continue with saving the data
             const docRefId = await saveMarkerData(newParty);
             setParties([...parties, { ...newParty, id: docRefId }]);
             openModalWithParty({ ...newParty, id: docRefId });
@@ -175,6 +169,7 @@ function Map() {
                         joinParty={joinParty}
                         deleteMarker={deleteMarker} // 추가
                         user={user}
+                        currentUserId={user && user.uid}
                     />
                 )}
             </div>

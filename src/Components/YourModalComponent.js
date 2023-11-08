@@ -8,17 +8,16 @@ import modalStyles from './ModalStyles';
 
 Modal.setAppElement('#root');
 
-const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinParty, deleteMarker }) => {
+const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinParty, deleteMarker, currentUserId }) => {
     const [cuisine, setCuisine] = useState('');
     const [selectedFood, setSelectedFood] = useState(null);
     const [isSaved, setIsSaved] = useState(selectedParty.id !== 'new');
-
+    const isCreator = selectedParty.mates && selectedParty.mates[0] && selectedParty.mates[0].uid === currentUserId;
     const handleCuisineChange = (event) => {
         setCuisine(event.target.value);
         setSelectedFood(null);
     };
-
-    const deleteParty = () => {
+    const deleteParty = () => {    
         if (window.confirm('파티를 삭제하시겠습니까?')) {
             deleteMarker(selectedParty.id);
         }
@@ -137,13 +136,15 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
                             저장
                         </button>
                     </div>
-                </div>  
+                </div>
+            )}
+            {isCreator && (
+                <button onClick={deleteParty} style={{ backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', cursor: 'pointer', marginTop: '10px' }}>
+                    삭제
+                </button>
             )}
             {isSaved && (
                 <>
-                    <button onClick={deleteParty} style={{ backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', cursor: 'pointer', marginTop: '10px' }}>
-                        삭제
-                    </button>
                     <button onClick={() => joinParty(selectedParty)} style={{ backgroundColor: '#5e72e4', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', cursor: 'pointer', marginTop: '10px' }}>
                         참가
                     </button>
