@@ -31,7 +31,7 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
         if (cuisine && selectedFood) {
             handleSaveData(cuisine, selectedFood.name);
             setShowModal(false);
-            setIsSaved(true); // Update isSaved when the party data is saved
+            setIsSaved(true);
         } else {
             alert('음식 유형과 음식을 모두 선택해주세요.');
         }
@@ -44,26 +44,25 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
             style={modalStyles}
             contentLabel="Party Modal"
         >
-            <div style={{ borderBottom: '1px solid #eaeaea', paddingBottom: '10px', marginBottom: '20px' }}>
+            <div style={{ borderBottom: '1px solid #eaeaea', paddingBottom: '10px', marginBottom: '20px', textAlign: 'center' }}>
                 <h2 style={{ color: '#5e72e4' }}>파티 정보</h2>
             </div>
-
             {selectedParty.id !== 'new' && (
-                <div style={{ marginBottom: '20px' }}>
-                    <div style={{ marginBottom: '10px' }}>
+                <div style={{ marginBottom: '20px' ,alignItems: 'center'}}>
+                    <div style={{ marginBottom: '10px' ,textAlign: 'center'}}>
                         <strong>주소:</strong>
                         <p>{getPositionValue(selectedParty)}</p>
                     </div>
-                    <div style={{ marginBottom: '10px' }}>
+                    <div style={{ marginBottom: '10px',textAlign: 'center' }}>
                         <strong>음식 유형:</strong>
                         <p>{selectedParty.cuisine || '미정'}</p>
                     </div>
-                    <div style={{ marginBottom: '10px' }}>
+                    <div style={{ marginBottom: '10px',textAlign: 'center' }}>
                         <strong>선택된 음식:</strong>
                         <p>{selectedParty.foodChoice || '미정'}</p>
                     </div>
-                    <h3 style={{ color: '#5e72e4', marginBottom: '10px' }}>파티 멤버</h3>
-                    <ul style={{ listStyleType: 'none', padding: 0 }}>
+                    <h3 style={{ color: '#5e72e4', marginBottom: '10px',textAlign: 'center' }}>파티 멤버</h3>
+                    <ul style={{ listStyleType: 'none', padding: 0,textAlign: 'center' }}>
                         {selectedParty.mates.map((mate, index) => (
                             <li key={index} style={{ background: '#e9ecef', padding: '5px 10px', borderRadius: '5px', margin: '5px 0' }}>
                                 {mate.displayName}
@@ -75,7 +74,7 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
 
             {selectedParty.id === 'new' && (
                 <div>
-                    <h3 style={{ color: '#5e72e4', marginBottom: '10px' }}>음식 선택</h3>
+                    <h3 style={{ color: '#5e72e4', marginBottom: '10px',textAlign: 'center' }}>음식 선택</h3>
                     <div>
                         {Object.keys(foodOptions).map((option) => (
                             <button
@@ -139,7 +138,7 @@ const YourModalComponent = ({ selectedParty, setShowModal, handleSaveData, joinP
                 </div>
             )}
             {isCreator && (
-                <button onClick={deleteParty} style={{ backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', cursor: 'pointer', marginTop: '10px' }}>
+                <button onClick={deleteParty} style={{ backgroundColor: '#f44336', color: 'white', border: 'none', borderRadius: '5px', padding: '10px 20px', cursor: 'pointer', marginTop: '10px', }}>
                     삭제
                 </button>
             )}

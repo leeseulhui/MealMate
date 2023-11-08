@@ -14,7 +14,7 @@ function Map() {
     const [showModal, setShowModal] = useState(false);
     const [newPartyLocation, setNewPartyLocation] = useState(null);
     const [selectedParty, setSelectedParty] = useState(null);
-
+    const [zoom, setZoom] = useState(15);
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, setUser);
         return unsubscribe;
@@ -53,6 +53,7 @@ function Map() {
             lng: event.latLng.lng(),
         };
         setNewPartyLocation(location);
+        setZoom(18.5); // Set the zoom level to a higher value
         openModalWithParty({ position: location, mates: [], id: 'new' });
     };
 
@@ -134,7 +135,7 @@ function Map() {
                         height: '100%',
                     }}
                     center={newPartyLocation || { lat: 36.8, lng: 127.074 }}
-                    zoom={15}
+                    zoom={zoom}
                     onClick={handleMapClick}
                 >
                     {parties.map((party) => (
@@ -167,7 +168,7 @@ function Map() {
                         setShowModal={setShowModal}
                         handleSaveData={handleSaveData}
                         joinParty={joinParty}
-                        deleteMarker={deleteMarker} // 추가
+                        deleteMarker={deleteMarker}
                         user={user}
                         currentUserId={user && user.uid}
                     />
