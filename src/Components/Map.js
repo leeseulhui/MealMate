@@ -189,7 +189,6 @@ function Map() {
                 )}
             </div>
         </LoadScript>
-
     );
 }
 const logoutButtonStyle = {
