@@ -3,9 +3,9 @@ import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import { auth } from '../Components/LoginSignup/firebase_config.js';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { updateMarkerData, saveMarkerData, getMarkers, deleteMarkerData } from './firebaseService.js';
-import YourModalComponent from './YourModalComponent.js';
-import PartyListModal from './PartyListModal.js';
+import { updateMarkerData, saveMarkerData, getMarkers, deleteMarkerData } from '../GuYong/firebaseService.js';
+import YourModalComponent from '../GuYong/YourModalComponent.js';
+import PartyListModal from '../GuYong/PartyListModal.js';
 import axios from 'axios';
 
 function Map() {
@@ -72,34 +72,43 @@ function Map() {
     };
 
     const handleSaveData = async (cuisine, foodChoice) => {
+        let address = ''; // 초기 주소 값을 빈 문자열로 설정
+    
+        try {
+            // Geocoding API 호출
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPartyLocation.lat},${newPartyLocation.lng}&key=AIzaSyBXSxMFjzikCYRuUJ_7DvFxAvoib0INVq8`);
+            if (response.data.status === 'OK') {
+                if (response.data.results.length > 0) {
+                    address = response.data.results[0].formatted_address; // 주소 업데이트
+                } else {
+                    console.log('No address found for this location.');
+                }
+            } else {
+                console.error('Geocoding failed: ' + response.data.status);
+            }
+        } catch (error) {
+            console.error('Error fetching address: ', error);
+        }
+    
+        // 새 파티 객체 생성
         const newParty = {
             mates: user ? [{ uid: user.uid, displayName: user.displayName || 'Anonymous' }] : [],
             cuisine: cuisine,
             foodChoice: foodChoice,
             position: newPartyLocation,
-            address: ''
+            address: address // 여기에 주소 추가
         };
-        const docRefId = await saveMarkerData(newParty);
-        setParties([...parties, { ...newParty, id: docRefId }]);
+    
         try {
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPartyLocation.lat},${newPartyLocation.lng}&key=AIzaSyBXSxMFjzikCYRuUJ_7DvFxAvoib0INVq8`);
-            if (response.data.status === 'OK') {
-                if (response.data.results.length > 0) {
-                    newParty.address = response.data.results[0].formatted_address;
-                } else {
-                    console.log('No address found for this location.');
-                    newParty.address = 'No address found';
-                }
-            } else {
-                console.error('Geocoding failed: ' + response.data.status);
-            }
+            // 데이터베이스에 새 파티 저장
             const docRefId = await saveMarkerData(newParty);
             setParties([...parties, { ...newParty, id: docRefId }]);
             openModalWithParty({ ...newParty, id: docRefId });
         } catch (error) {
-            console.error('Error adding document: ', error);
+            console.error('Error saving new party: ', error);
         }
     };
+    
 
 
     const joinParty = async (party) => {

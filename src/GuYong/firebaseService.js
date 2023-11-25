@@ -1,5 +1,5 @@
 import { collection, addDoc, getFirestore, doc, updateDoc, getDocs } from "firebase/firestore";
-import { getFirebase } from "./LoginSignup/firebase_config";
+import { getFirebase } from "../Components/LoginSignup/firebase_config";
 import { deleteDoc } from "firebase/firestore";
 
 
