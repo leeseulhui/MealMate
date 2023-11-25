@@ -7,7 +7,10 @@ import user_icon from '../Assets/person.png';
 import email_icon from '../Assets/email.png';
 import password_icon from '../Assets/password.png';
 import { app } from './firebase_config';
+<<<<<<< HEAD
 import { doc, setDoc } from "firebase/firestore";
+=======
+>>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
 
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -38,6 +41,7 @@ const LoginSignup = () => {
 
   const saveUserData = async (userId, userData) => {
     try {
+<<<<<<< HEAD
       // 'users' 컬렉션 내에 사용자의 uid를 문서 ID로 사용하여 문서를 생성하거나 업데이트합니다.
       const userDocRef = doc(db, "users", userId);
       await setDoc(userDocRef, userData);
@@ -47,6 +51,18 @@ const LoginSignup = () => {
     }
   }
   
+=======
+      await addDoc(collection(db, "users"), {
+        uid: userId,
+        ...userData
+      });
+      console.log("User data saved successfully");
+    } catch (error) {
+      console.error("Error saving user data: ", error);
+    }
+  }
+
+>>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
   const handleSignUp = async () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -55,9 +71,14 @@ const LoginSignup = () => {
         gender: gender,
         email: email
       };
+<<<<<<< HEAD
       // saveUserData 함수 호출 시, userCredential.user.uid를 문서 ID로 전달합니다.
       await saveUserData(userCredential.user.uid, userData);
       navigate('/map'); // 회원가입 성공 후 map 페이지로 이동합니다.
+=======
+      await saveUserData(userCredential.user.uid, userData);
+      setAction('Login');
+>>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
     } catch (error) {
       console.error(error);
     }
