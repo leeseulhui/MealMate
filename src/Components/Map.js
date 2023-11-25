@@ -7,12 +7,9 @@ import { updateMarkerData, saveMarkerData, getMarkers, deleteMarkerData } from '
 import YourModalComponent from '../GuYong/YourModalComponent.js';
 import PartyListModal from '../GuYong/PartyListModal.js';
 import axios from 'axios';
-<<<<<<< HEAD
 import { getFirestore, doc, getDoc } from 'firebase/firestore';
 
 const db = getFirestore();
-=======
->>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
 
 function Map() {
     const navigate = useNavigate();
@@ -27,7 +24,6 @@ function Map() {
         party.mates.some(mate => mate.uid === user?.uid)
     );
     useEffect(() => {
-<<<<<<< HEAD
         const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
             if (currentUser) {
                 // Firestore에서 사용자 문서 참조 가져오기
@@ -65,11 +61,6 @@ function Map() {
     }, []);
     
     
-=======
-        const unsubscribe = onAuthStateChanged(auth, setUser);
-        return unsubscribe;
-    }, []);
->>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
 
     useEffect(() => {
         const fetchMarkers = async () => {
@@ -119,17 +110,10 @@ function Map() {
 
     const handleSaveData = async (cuisine, foodChoice) => {
         let address = ''; // 초기 주소 값을 빈 문자열로 설정
-<<<<<<< HEAD
 
         try {
             // Geocoding API 호출
             const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPartyLocation.lat},${newPartyLocation.lng}&key=AIzaSyDBtMZmdKy9BK9YMCOwhfaOlV9Y-Ns47aU`);
-=======
-    
-        try {
-            // Geocoding API 호출
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPartyLocation.lat},${newPartyLocation.lng}&key=AIzaSyBXSxMFjzikCYRuUJ_7DvFxAvoib0INVq8`);
->>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
             if (response.data.status === 'OK') {
                 if (response.data.results.length > 0) {
                     address = response.data.results[0].formatted_address; // 주소 업데이트
@@ -142,7 +126,6 @@ function Map() {
         } catch (error) {
             console.error('Error fetching address: ', error);
         }
-<<<<<<< HEAD
 
         // 새 파티 객체 생성
         const newParty = {
@@ -153,18 +136,6 @@ function Map() {
             address: address
         };
 
-=======
-    
-        // 새 파티 객체 생성
-        const newParty = {
-            mates: user ? [{ uid: user.uid, displayName: user.displayName || 'Anonymous' }] : [],
-            cuisine: cuisine,
-            foodChoice: foodChoice,
-            position: newPartyLocation,
-            address: address // 여기에 주소 추가
-        };
-    
->>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
         try {
             // 데이터베이스에 새 파티 저장
             const docRefId = await saveMarkerData(newParty);
@@ -174,11 +145,6 @@ function Map() {
             console.error('Error saving new party: ', error);
         }
     };
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
 
 
     const joinParty = async (party) => {
@@ -193,11 +159,7 @@ function Map() {
             if (!userExists) {
                 party.mates.push({
                     uid: user.uid,
-<<<<<<< HEAD
                     displayName: user.displayName,
-=======
-                    displayName: user.displayName || "Anonymous",
->>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
                 });
 
                 try {
@@ -216,11 +178,7 @@ function Map() {
     };
 
     return (
-<<<<<<< HEAD
         <LoadScript googleMapsApiKey="AIzaSyDBtMZmdKy9BK9YMCOwhfaOlV9Y-Ns47aU">
-=======
-        <LoadScript googleMapsApiKey="AIzaSyBXSxMFjzikCYRuUJ_7DvFxAvoib0INVq8">
->>>>>>> c0566cd0e429cc2f38383be16df7fe08af140680
             <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
                 <GoogleMap
                     mapContainerStyle={{
