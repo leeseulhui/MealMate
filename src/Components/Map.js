@@ -3,9 +3,13 @@ import { GoogleMap, LoadScript, Marker } from '@react-google-maps/api';
 import { auth } from '../Components/LoginSignup/firebase_config.js';
 import { signOut, onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import { updateMarkerData, saveMarkerData, getMarkers, deleteMarkerData } from './firebaseService.js';
-import YourModalComponent from './YourModalComponent.js';
+import { updateMarkerData, saveMarkerData, getMarkers, deleteMarkerData } from '../GuYong/firebaseService.js';
+import YourModalComponent from '../GuYong/YourModalComponent.js';
+import PartyListModal from '../GuYong/PartyListModal.js';
 import axios from 'axios';
+import { getFirestore, doc, getDoc } from 'firebase/firestore';
+
+const db = getFirestore();
 
 function Map() {
     const navigate = useNavigate();
@@ -14,11 +18,49 @@ function Map() {
     const [showModal, setShowModal] = useState(false);
     const [newPartyLocation, setNewPartyLocation] = useState(null);
     const [selectedParty, setSelectedParty] = useState(null);
-
+    const [zoom, setZoom] = useState(15);
+    const [showPartyListModal, setShowPartyListModal] = useState(false);
+    const userParties = parties.filter(party =>
+        party.mates.some(mate => mate.uid === user?.uid)
+    );
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, setUser);
+        const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+            if (currentUser) {
+                // Firestore에서 사용자 문서 참조 가져오기
+                const userDocRef = doc(db, 'users', currentUser.uid);
+                try {
+                    // 문서의 스냅샷을 가져옴
+                    const userDocSnap = await getDoc(userDocRef);
+    
+                    if (userDocSnap.exists()) {
+                        // 문서 데이터에서 name 필드 사용
+                        const userName = userDocSnap.data().name;
+                        console.log('Logged in user name:', userName);
+                        // 사용자 상태 업데이트
+                        setUser({
+                            ...currentUser,
+                            displayName: userName
+                        });
+                    } else {
+                        console.log('User document not found in Firestore!');
+                        // 사용자 상태를 Anonymous로 설정하거나 다른 로직을 실행
+                        setUser({
+                            ...currentUser,
+                            displayName: 'Anonymous'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error fetching user document:', error);
+                }
+            } else {
+                console.log('No user is logged in.');
+                setUser(null);
+            }
+        });
         return unsubscribe;
     }, []);
+    
+    
 
     useEffect(() => {
         const fetchMarkers = async () => {
@@ -31,7 +73,7 @@ function Map() {
     const deleteMarker = async (partyId) => {
         try {
             await deleteMarkerData(partyId);
-            setParties(parties.filter(party => party.id !== partyId));
+            setParties(parties.filter(party => party.id !== partyId)); // 상태 업데이트
             setShowModal(false);
         } catch (error) {
             console.error('Error deleting marker: ', error);
@@ -53,6 +95,7 @@ function Map() {
             lng: event.latLng.lng(),
         };
         setNewPartyLocation(location);
+        setZoom(18.5); // Set the zoom level to a higher value
         openModalWithParty({ position: location, mates: [], id: 'new' });
     };
 
@@ -66,31 +109,40 @@ function Map() {
     };
 
     const handleSaveData = async (cuisine, foodChoice) => {
-        const newParty = {
-            mates: user ? [{ uid: user.uid, displayName: user.displayName || 'Anonymous' }] : [],
-            cuisine: cuisine,
-            foodChoice: foodChoice,
-            position: newPartyLocation,
-            address: ''
-        };
+        let address = ''; // 초기 주소 값을 빈 문자열로 설정
 
         try {
-            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPartyLocation.lat},${newPartyLocation.lng}&key=AIzaSyBXSxMFjzikCYRuUJ_7DvFxAvoib0INVq8`);
+            // Geocoding API 호출
+            const response = await axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${newPartyLocation.lat},${newPartyLocation.lng}&key=AIzaSyDBtMZmdKy9BK9YMCOwhfaOlV9Y-Ns47aU`);
             if (response.data.status === 'OK') {
                 if (response.data.results.length > 0) {
-                    newParty.address = response.data.results[0].formatted_address;
+                    address = response.data.results[0].formatted_address; // 주소 업데이트
                 } else {
                     console.log('No address found for this location.');
-                    newParty.address = 'No address found';
                 }
             } else {
                 console.error('Geocoding failed: ' + response.data.status);
             }
+        } catch (error) {
+            console.error('Error fetching address: ', error);
+        }
+
+        // 새 파티 객체 생성
+        const newParty = {
+            mates: user ? [{ uid: user.uid, displayName: user.displayName }] : [], // 현재 로그인한 사용자의 이름 사용
+            cuisine: cuisine,
+            foodChoice: foodChoice,
+            position: newPartyLocation,
+            address: address
+        };
+
+        try {
+            // 데이터베이스에 새 파티 저장
             const docRefId = await saveMarkerData(newParty);
             setParties([...parties, { ...newParty, id: docRefId }]);
             openModalWithParty({ ...newParty, id: docRefId });
         } catch (error) {
-            console.error('Error adding document: ', error);
+            console.error('Error saving new party: ', error);
         }
     };
 
@@ -107,7 +159,7 @@ function Map() {
             if (!userExists) {
                 party.mates.push({
                     uid: user.uid,
-                    displayName: user.displayName || "Anonymous",
+                    displayName: user.displayName,
                 });
 
                 try {
@@ -126,7 +178,7 @@ function Map() {
     };
 
     return (
-        <LoadScript googleMapsApiKey="AIzaSyBXSxMFjzikCYRuUJ_7DvFxAvoib0INVq8">
+        <LoadScript googleMapsApiKey="AIzaSyDBtMZmdKy9BK9YMCOwhfaOlV9Y-Ns47aU">
             <div style={{ width: '100vw', height: '100vh', position: 'relative' }}>
                 <GoogleMap
                     mapContainerStyle={{
@@ -134,7 +186,7 @@ function Map() {
                         height: '100%',
                     }}
                     center={newPartyLocation || { lat: 36.8, lng: 127.074 }}
-                    zoom={15}
+                    zoom={zoom}
                     onClick={handleMapClick}
                 >
                     {parties.map((party) => (
@@ -156,7 +208,15 @@ function Map() {
                         />
                     )}
                 </GoogleMap>
+                <PartyListModal
+                    isOpen={showPartyListModal}
+                    onClose={() => setShowPartyListModal(false)}
+                    parties={userParties}
+                />
 
+                <button onClick={() => setShowPartyListModal(true)} style={ListButtonStyle} >
+                    내 파티 목록 보기
+                </button>
                 <button onClick={handleLogout} style={logoutButtonStyle}>
                     로그아웃
                 </button>
@@ -167,7 +227,7 @@ function Map() {
                         setShowModal={setShowModal}
                         handleSaveData={handleSaveData}
                         joinParty={joinParty}
-                        deleteMarker={deleteMarker} // 추가
+                        deleteMarker={deleteMarker}
                         user={user}
                         currentUserId={user && user.uid}
                     />
@@ -187,5 +247,15 @@ const logoutButtonStyle = {
     borderRadius: '5px',
     cursor: 'pointer',
 };
-
+const ListButtonStyle = {
+    position: 'absolute',
+    top: '50px',
+    right: '10px',
+    padding: '10px',
+    backgroundColor: '#f44336',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    cursor: 'pointer',
+};
 export default Map;

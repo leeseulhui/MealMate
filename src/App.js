@@ -1,39 +1,23 @@
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import "./style.scss";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { useContext } from "react";
-import { AuthContext } from "./context/AuthContext";
-
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './Components/Home'; 
+import LoginSignup from './Components/LoginSignup/LoginSignup';
+import Map from './Components/Map';
+import BottomTabNav from './BottomTabNav'; // Import the bottom tab component
+import './BottomTabNav.css'; // Import the styles for the bottom tab
+import Chat from './Components/Chat';
 function App() {
-  const { currentUser } = useContext(AuthContext);
-
-  const ProtectedRoute = ({ children }) => {
-    if (!currentUser) {
-      return <Navigate to="/login" />;
-    }
-
-    return children
-  };
-
   return (
-    <BrowserRouter>
+    <Router>
       <Routes>
-        <Route path="/">
-          <Route
-            index
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="login" element={<Login />} />
-          <Route path="register" element={<Register />} />
-        </Route>
+        <Route path="/" element={<Home />} /> 
+        <Route path="/login" element={<LoginSignup />} />
+        <Route path="/map" element={<Map />} />
+        <Route path="/home" element={<Home />} />
+        <Route path="/Chats" element={<Chat />} />
       </Routes>
-    </BrowserRouter>
+      <BottomTabNav /> 
+    </Router>
   );
 }
 
